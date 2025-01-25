@@ -1,0 +1,41 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "e7dd7436a96fc09fa3d4ede4f204ae93"
+application_url = "https://b2b2-31-223-57-191.ngrok-free.app"
+embedded = true
+name = "artifind-reactstage"
+handle = "artifind-reactstage"
+
+[webhooks]
+api_version = "2025-01"
+
+  [[webhooks.subscriptions]]
+  topics = [ "app/uninstalled" ]
+  uri = "/webhooks/app/uninstalled"
+
+  [[webhooks.subscriptions]]
+  topics = [ "app/scopes_update" ]
+  uri = "/webhooks/app/scopes_update"
+
+  [[webhooks.subscriptions]]
+  topics = [ "bulk_operations/finish" ]
+  uri = "/webhooks/bulk-operations"
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "read_products, write_products, read_product_listings, read_inventory, write_inventory"
+
+[auth]
+redirect_urls = [
+  "https://b2b2-31-223-57-191.ngrok-free.app/auth/callback",
+  "https://b2b2-31-223-57-191.ngrok-free.app/auth/shopify/callback",
+  "https://b2b2-31-223-57-191.ngrok-free.app/api/auth/callback"
+]
+
+[pos]
+embedded = false
+
+[build]
+dev_store_url = "codeven-app.myshopify.com"
+automatically_update_urls_on_dev = true
+include_config_on_deploy = true

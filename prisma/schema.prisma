@@ -1,0 +1,105 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Note that some adapters may set a maximum length for the String type by default, please ensure your strings are long
+// enough when changing adapters.
+// See https://www.prisma.io/docs/orm/reference/prisma-schema-reference#string for more information
+datasource db {
+  provider = "sqlite"
+  url      = "file:dev.sqlite"
+}
+
+model Session {
+  id            String    @id
+  shop          String
+  state         String
+  isOnline      Boolean   @default(false)
+  scope         String?
+  expires       DateTime?
+  accessToken   String
+  userId        BigInt?
+  firstName     String?
+  lastName      String?
+  email         String?
+  accountOwner  Boolean   @default(false)
+  locale        String?
+  collaborator  Boolean?  @default(false)
+  emailVerified Boolean?  @default(false)
+}
+
+model Shop {
+  id          Int       @id @default(autoincrement())
+  shopDomain  String    @unique
+  accessToken String?
+  name String
+  email String
+  plan String
+  contactEmail String
+  currency String
+  products    Product[]
+  metaRules   MetaRule[]
+  webhookLogs WebhookLog[]
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Product {
+  id              Int       @id @default(autoincrement())
+  shopifyId       String   
+  title           String
+  metaTitle       String?
+  metaDescription String?
+  shop            Shop      @relation(fields: [shopId], references: [id])
+  shopId          Int
+  images          Image[]
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@unique([shopId, shopifyId])
+}
+
+model Image {
+  id          Int      @id @default(autoincrement())
+  shopifyId   String
+  src         String
+  alt         String?
+  product     Product  @relation(fields: [productId], references: [id])
+  productId   Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([productId, shopifyId])
+}
+
+model MetaRule {
+  id              Int      @id @default(autoincrement())
+  name            String
+  type            String   // 'product' veya 'image'
+  pattern         String
+  description     String?
+  isActive        Boolean  @default(true)
+  isApplied       Boolean  @default(false)
+  bulkOperationId String?  // Bulk operation ID'sini saklayacağız
+  status          String?  // RUNNING, COMPLETED, FAILED gibi durumlar
+  shop            Shop     @relation(fields: [shopId], references: [id])
+  shopId          Int
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model WebhookLog {
+  id          Int      @id @default(autoincrement())
+  topic       String
+  payload     String
+  processedAt DateTime
+  success     Boolean  @default(true)
+  error       String?
+  shop        Shop     @relation(fields: [shopId], references: [id])
+  shopId      Int
+  createdAt   DateTime @default(now())
+}
